@@ -32,18 +32,18 @@ public class ExportScenesAndPlots extends StarMacro {
 			ScalarDisplayer scalarDisplayer =
 					((ScalarDisplayer) scn.getDisplayerManager().getObject("Scalar 1"));
 
-			SimpleAnnotation maxAnn = createAnnotation(scn.getPresentationName() + "_max", scalarDisplayer.getScalarDisplayQuantity().getRangeMax());
-			SimpleAnnotation minAnn = createAnnotation(scn.getPresentationName() + "_min", scalarDisplayer.getScalarDisplayQuantity().getRangeMin());
+			SimpleAnnotation maxAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_max", scalarDisplayer.getScalarDisplayQuantity().getGlobalMax());
+			SimpleAnnotation minAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min", scalarDisplayer.getScalarDisplayQuantity().getGlobalMin());
 
 			scn.getAnnotationPropManager().getAnnotationGroup().setObjects(maxAnn, minAnn, logoAnnotation);
 
 			SimpleAnnotationProp simpleAnnotationProp_max =
-					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scn.getPresentationName() + "_max"));
-			simpleAnnotationProp_max.setPosition(new DoubleVector(new double[] {0.1, 1.0, 0.0}));
+					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_max"));
+			simpleAnnotationProp_max.setPosition(new DoubleVector(new double[] {0.0, 0.0, 0.0}));
 
 			SimpleAnnotationProp simpleAnnotationProp_min =
-					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scn.getPresentationName() + "_min"));
-			simpleAnnotationProp_min.setPosition(new DoubleVector(new double[] {0.4, 1.0, 0.0}));
+					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min"));
+			simpleAnnotationProp_min.setPosition(new DoubleVector(new double[] {0.35, 0.0, 0.0}));
 
 			sim.println("Saving Scene: " + scn.getPresentationName());
 	      	scn.printAndWait(resolvePath(sceneFolder + sep + scn.getPresentationName() + ".jpg"), 1, 1920, 1080);
@@ -64,7 +64,7 @@ public class ExportScenesAndPlots extends StarMacro {
 
 		simpleAnnotation.setPresentationName(str);
 
-		simpleAnnotation.setText(String.format("%s: %.3f", str, rang));
+		simpleAnnotation.setText(String.format("%s: %.1f", str, rang));
 
 		return simpleAnnotation;
 
