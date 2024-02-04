@@ -127,17 +127,17 @@ public class ExportScenesAndPlots extends StarMacro {
 		public void RunExportScenes(Collection<Scene> sceneCollection){
 		String dir = sim.getSessionDir(); //get the name of the simulation's directory
 		String sep = System.getProperty("file.separator"); //get the right separator for your operative system
-		File resultFolder = new File(dir + "\\" + sim + "_Results");
-	  	resultFolder.mkdir();
+		//File resultFolder = new File(dir + sep + sim + "_Results");
+	  	//resultFolder.mkdir();
 
-		File sceneFolder = new File(resultFolder + "\\Scenes");
+		File sceneFolder = new File(dir + sep + sim +"_Scenes");
 	  	sceneFolder.mkdir();
 
-		File plotFolder = new File(resultFolder + "\\Plots");
-	  	plotFolder.mkdir();
+		//File plotFolder = new File(resultFolder + "\\Plots");
+	  	//plotFolder.mkdir();
 
 
-        for (Scene scn: sim.getSceneManager().getScenes()) {
+        for (Scene scn: sceneCollection) {
 
 			LogoAnnotation logoAnnotation =
 					((LogoAnnotation) sim.getAnnotationManager().getObject("Logo"));
@@ -145,8 +145,10 @@ public class ExportScenesAndPlots extends StarMacro {
 			ScalarDisplayer scalarDisplayer =
 					((ScalarDisplayer) scn.getDisplayerManager().getObject("Scalar 1"));
 
-			SimpleAnnotation maxAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_max", scalarDisplayer.getScalarDisplayQuantity().getGlobalMax());
-			SimpleAnnotation minAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min", scalarDisplayer.getScalarDisplayQuantity().getGlobalMin());
+			SimpleAnnotation maxAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_max",
+					scalarDisplayer.getScalarDisplayQuantity().getGlobalMax());
+			SimpleAnnotation minAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min",
+					scalarDisplayer.getScalarDisplayQuantity().getGlobalMin());
 
 			scn.getAnnotationPropManager().getAnnotationGroup().setObjects(maxAnn, minAnn, logoAnnotation);
 
@@ -158,8 +160,9 @@ public class ExportScenesAndPlots extends StarMacro {
 					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min"));
 			simpleAnnotationProp_min.setPosition(new DoubleVector(new double[] {0.35, 0.0, 0.0}));
 
-			sim.println("Saving Scene: " + scn.getPresentationName());
-			scn.printAndWait(resolvePath(sceneFolder + sep + scn.getPresentationName() + ".jpg"), 1, 1920, 1080);
+			//sim.println("Saving Scene: " + scn.getPresentationName());
+			//scn.printAndWait(resolvePath(sceneFolder + sep + scn.getPresentationName() + ".jpg"), 1, 1920, 1080);
+
 
 		}
 
