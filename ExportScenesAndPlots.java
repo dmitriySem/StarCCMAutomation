@@ -20,6 +20,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Collection;
+import java.util.Optional;
 
 public class ExportScenesAndPlots extends StarMacro {
 	public Simulation sim;
@@ -52,10 +53,13 @@ public class ExportScenesAndPlots extends StarMacro {
 
 		SimpleAnnotation simpleAnnotation =
 				sim.getAnnotationManager().createAnnotation(SimpleAnnotation.class);
-
 		simpleAnnotation.setPresentationName(str);
 
-		simpleAnnotation.setText(String.format("%s: %.1f", str, rang));
+		String name = "Мин";
+		if (str.contains("max")) {
+			name = "Макс";
+		}
+		simpleAnnotation.setText(String.format("%6s: %.1f", name, rang));
 
 		return simpleAnnotation;
 
@@ -141,27 +145,39 @@ public class ExportScenesAndPlots extends StarMacro {
 
 			LogoAnnotation logoAnnotation =
 					((LogoAnnotation) sim.getAnnotationManager().getObject("Logo"));
+			SimpleAnnotation maxAnn, minAnn;
 
-			ScalarDisplayer scalarDisplayer =
-					((ScalarDisplayer) scn.getDisplayerManager().getObject("Scalar 1"));
 
-			SimpleAnnotation maxAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_max",
-					scalarDisplayer.getScalarDisplayQuantity().getGlobalMax());
-			SimpleAnnotation minAnn = createAnnotation(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min",
-					scalarDisplayer.getScalarDisplayQuantity().getGlobalMin());
+			Optional<Displayer> optionalVectorDisplayer = scn.getDisplayerManager().getObjects().stream().
+					filter(displayer -> displayer.getPresentationName().contains("Vector")).findFirst();
+
+
+			if(optionalVectorDisplayer.isEmpty()){
+				ScalarDisplayer displayer1 = ((ScalarDisplayer) scn.getDisplayerManager().getObject("Scalar 1"));
+				 maxAnn = createAnnotation(scn.getPresentationName() + "_max",
+						displayer1.getScalarDisplayQuantity().getGlobalMax());
+				 minAnn = createAnnotation(scn.getPresentationName()  + "_min",
+						displayer1.getScalarDisplayQuantity().getGlobalMin());
+			} else {
+				VectorDisplayer vectorDisplayer = (VectorDisplayer) optionalVectorDisplayer.get();
+				 maxAnn = createAnnotation(scn.getPresentationName() + "_max",
+						vectorDisplayer.getColoringScalar().getGlobalMax());
+				 minAnn = createAnnotation(scn.getPresentationName()  + "_min",
+						vectorDisplayer.getColoringScalar().getGlobalMin());
+			}
 
 			scn.getAnnotationPropManager().getAnnotationGroup().setObjects(maxAnn, minAnn, logoAnnotation);
 
 			SimpleAnnotationProp simpleAnnotationProp_max =
-					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_max"));
-			simpleAnnotationProp_max.setPosition(new DoubleVector(new double[] {0.0, 0.0, 0.0}));
+					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(maxAnn.getPresentationName()));
+			simpleAnnotationProp_max.setPosition(new DoubleVector(new double[] {0.15, 0.0, 0.0}));
 
 			SimpleAnnotationProp simpleAnnotationProp_min =
-					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(scalarDisplayer.getScalarDisplayQuantity().getFieldFunctionName() + "_min"));
-			simpleAnnotationProp_min.setPosition(new DoubleVector(new double[] {0.35, 0.0, 0.0}));
+					((SimpleAnnotationProp) scn.getAnnotationPropManager().getObject(minAnn.getPresentationName()));
+			simpleAnnotationProp_min.setPosition(new DoubleVector(new double[] {0.0, 0.0, 0.0}));
 
-			//sim.println("Saving Scene: " + scn.getPresentationName());
-			//scn.printAndWait(resolvePath(sceneFolder + sep + scn.getPresentationName() + ".jpg"), 1, 1920, 1080);
+			sim.println("Saving Scene: " + scn.getPresentationName());
+			scn.printAndWait(resolvePath(sceneFolder + sep + scn.getPresentationName() + ".jpg"), 1, 1920, 1080);
 
 
 		}
